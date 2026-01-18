@@ -27,7 +27,7 @@ public class Client {
 		this.instantSortie = t;
 	}
 	
-	public double getTempsPresences() {
+	public double getTempsPresence() {
 		return instantSortie - instantArrivee;
 	}
 	
