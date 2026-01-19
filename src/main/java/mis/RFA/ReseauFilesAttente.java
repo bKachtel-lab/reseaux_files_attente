@@ -97,24 +97,25 @@ public class ReseauFilesAttente {
     // Traitement des événements
  
     private void traiterArriveeExterne() {
-        // Création du client
         compteurClients++;
         nbClientsEntres++;
         Client c = new Client(compteurClients, tempsCourant);
 
         // Arrivée sur le coordinateur
-        if(fc.arriver(c, tempsCourant)) {
-        	agenda.add(new Evenmt(fc.getDateFinService(),
-        					Evenmt.TypeEvenement.FIN_SERVICE_FC, -1));
-        	}
-        // Si Fc vient de devenir occupé, on planifie la fin de service
-       
-            agenda.add(new Evenmt(tempsCourant + genererInterArrivee(),
-                                  Evenmt.TypeEvenement.ARRIVEE_EXTERNE,
+        if (fc.arriver(c, tempsCourant)) {
+            // Fc était libre, on vient de lancer un service -> planifier sa fin
+            agenda.add(new Evenmt(fc.getDateFinService(),
+                                  Evenmt.TypeEvenement.FIN_SERVICE_FC,
                                   -1));
-        
-        
+        }
+
+        // Toujours planifier la prochaine arrivée externe
+        double prochaineArrivee = tempsCourant + genererInterArrivee();
+        agenda.add(new Evenmt(prochaineArrivee,
+                              Evenmt.TypeEvenement.ARRIVEE_EXTERNE,
+                              -1));
     }
+
 
     private void traiterFinServiceFc() {
 
