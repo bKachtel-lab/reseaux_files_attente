@@ -169,7 +169,7 @@ public class ReseauFilesAttente {
                 sommeTempsPresence += c.getTempsPresence();
             }
             double W = sommeTempsPresence / clientsSortis.size();
-            System.out.println("Temps moyen de présence dans le réseau W ≈ " + W);
+            System.out.println("Temps moyen de présence dans le réseau W ≈ " + W + " ms");
         }
 
         for (int i = 0; i < f.length; i++) {
