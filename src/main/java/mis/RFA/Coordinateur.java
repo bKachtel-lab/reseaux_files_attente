@@ -3,7 +3,7 @@ package mis.RFA;
 public class Coordinateur extends FileAttente{
 	private final double p;
 	
-	public Coordinateur(double p, double mu) {
+	public Coordinateur(double mu, double p) {
 		super("Fc", mu);
 		this.p = p;
 	}

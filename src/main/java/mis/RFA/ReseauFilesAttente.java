@@ -51,9 +51,7 @@ public class ReseauFilesAttente {
         this.clientsSortis = new ArrayList<>();
     }
 
-    // =====================
     // Générateurs aléatoires
-    // =====================
 
     private double genererInterArrivee() {
         return -Math.log(1 - rand.nextDouble()) / lambda;
@@ -69,9 +67,7 @@ public class ReseauFilesAttente {
         return q.length - 1; // sécurité
     }
 
-    // =====================
     // Simulation principale
-    // =====================
 
     public void simuler() {
         // première arrivée externe
@@ -95,14 +91,11 @@ public class ReseauFilesAttente {
             }
         }
 
-        // Ici tu pourras calculer les stats globales à partir de clientsSortis
         afficherStats();
     }
 
-    // =====================
     // Traitement des événements
-    // =====================
-
+ 
     private void traiterArriveeExterne() {
         // Création du client
         compteurClients++;
@@ -110,75 +103,56 @@ public class ReseauFilesAttente {
         Client c = new Client(compteurClients, tempsCourant);
 
         // Arrivée sur le coordinateur
-        fc.arriver(c, tempsCourant);
+        if(fc.arriver(c, tempsCourant)) {
+        	agenda.add(new Evenmt(fc.getDateFinService(),
+        					Evenmt.TypeEvenement.FIN_SERVICE_FC, -1));
+        	}
         // Si Fc vient de devenir occupé, on planifie la fin de service
-        if (fc.estOccupe() && fc.getDateFinService() >= tempsCourant) {
-            agenda.add(new Evenmt(fc.getDateFinService(),
-                                  Evenmt.TypeEvenement.FIN_SERVICE_FC,
+       
+            agenda.add(new Evenmt(tempsCourant + genererInterArrivee(),
+                                  Evenmt.TypeEvenement.ARRIVEE_EXTERNE,
                                   -1));
-        }
-
-        // Programmer la prochaine arrivée externe
-        double prochaine = tempsCourant + genererInterArrivee();
-        agenda.add(new Evenmt(prochaine,
-                              Evenmt.TypeEvenement.ARRIVEE_EXTERNE,
-                              -1));
+        
+        
     }
 
     private void traiterFinServiceFc() {
-        // Le coordinateur termine le service de son client courant
-        Client c = fc.terminerService(tempsCourant);
-        if (c == null) {
-            // plus personne, rien à faire
-            return;
-        }
 
-        // Tirage : sortie ou renvoi vers un serveur
+        Client c = fc.terminerService(tempsCourant);
+        if (c == null) return;
+
         if (fc.sortDuSys()) {
             c.setInstantSortie(tempsCourant);
             nbClientsSortis++;
             clientsSortis.add(c);
         } else {
             int idx = tirageServeurSelonQ();
-            f[idx].arriver(c, tempsCourant);
-            if (f[idx].estOccupe()
-                    && f[idx].getDateFinService() >= tempsCourant) {
+            if (f[idx].arriver(c, tempsCourant)) {
                 agenda.add(new Evenmt(f[idx].getDateFinService(),
-                                      Evenmt.TypeEvenement.FIN_SERVICE_FI,
-                                      idx));
+                        Evenmt.TypeEvenement.FIN_SERVICE_FI, idx));
             }
         }
 
-        // Si Fc a encore un client, planifier la prochaine fin de service
-        if (fc.estOccupe()) {
+        if (fc.occupe) {
             agenda.add(new Evenmt(fc.getDateFinService(),
-                                  Evenmt.TypeEvenement.FIN_SERVICE_FC,
-                                  -1));
+                    Evenmt.TypeEvenement.FIN_SERVICE_FC, -1));
         }
     }
 
-    private void traiterFinServiceFi(int idxServeur) {
-        FileAttente fi = f[idxServeur];
+    private void traiterFinServiceFi(int idx) {
 
+        FileAttente fi = f[idx];
         Client c = fi.terminerService(tempsCourant);
-        if (c == null) {
-            return;
-        }
+        if (c == null) return;
 
-        // Retour au coordinateur
-        fc.arriver(c, tempsCourant);
-        if (fc.estOccupe()
-                && fc.getDateFinService() >= tempsCourant) {
+        if (fc.arriver(c, tempsCourant)) {
             agenda.add(new Evenmt(fc.getDateFinService(),
-                                  Evenmt.TypeEvenement.FIN_SERVICE_FC,
-                                  -1));
+                    Evenmt.TypeEvenement.FIN_SERVICE_FC, -1));
         }
 
-        // Si le serveur Fi a encore quelqu'un, planifier sa prochaine fin
-        if (fi.estOccupe()) {
+        if (fi.occupe) {
             agenda.add(new Evenmt(fi.getDateFinService(),
-                                  Evenmt.TypeEvenement.FIN_SERVICE_FI,
-                                  idxServeur));
+                    Evenmt.TypeEvenement.FIN_SERVICE_FI, idx));
         }
     }
 

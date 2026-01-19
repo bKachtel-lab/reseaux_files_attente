@@ -10,7 +10,7 @@ public class FileAttente {
 	private final String nom;
 	private final double mu; 
 	private final Queue<Client> file; 
-	private boolean occupe;
+	boolean occupe;
 	private double finService; 
 	private int nbClientsTraites;
 
@@ -47,11 +47,14 @@ public class FileAttente {
 	}
 
 	// entrée d’un client dans cette file à la date t
-	public void arriver(Client c, double tCourant) {
+	public boolean arriver(Client c, double tCourant) {
+		boolean etaitLibre = !occupe;
 		file.add(c);
-		if (!occupe) {
+		if (etaitLibre) {
 			demarrerService(tCourant);
+			return true;
 		}
+		return false;
 	}
 
 	// Termine le service courant, renvoie le client qui sort de cette file
