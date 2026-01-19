@@ -11,4 +11,8 @@ public class Coordinateur extends FileAttente{
 	public boolean sortDuSys() {
 		return Math.random() < p;
 	}
+	
+	public double getP() {
+		return p;
+	}
 }

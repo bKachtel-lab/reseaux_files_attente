@@ -1,5 +1,8 @@
 package mis.RFA;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -172,9 +175,34 @@ public class ReseauFilesAttente {
             System.out.println("Temps moyen de présence dans le réseau W ≈ " + W + " ms");
         }
 
-        for (int i = 0; i < f.length; i++) {
+        for (int i = 0; i < f.length; i++) 
             System.out.println(f[i].getNom()
                     + " a traité " + f[i].getNbClientsTraites() + " clients.");
+        
+        
+        String nomFichier = String.format("src/main/resources/reseau_lambda%.1f_n%d_p%.1f_T%.0f.csv",
+                lambda, f.length, fc.getP(), dureeSimulation);
+        sauvegarderClientsSortis(nomFichier);
+    }
+    
+    public void sauvegarderClientsSortis(String nomFichier) {
+        try (PrintWriter w = new PrintWriter(new FileWriter(nomFichier))) {
+            // En-tête CSV
+            w.println("ID;ArriveeSysteme;TempsPresence;SortieSysteme");
+
+            // Toutes les requêtes terminées
+            for (Client c : clientsSortis) {
+                w.println(String.format("%d;%.4f;%.4f;%.4f",
+                        c.getId(),
+                        c.getInstantArrivee(),
+                        c.getTempsPresence(),
+                        c.getInstantSortie()));
+            }
+ 
+            System.out.println("Données sauvegardées dans: " + nomFichier + 
+                              " (" + clientsSortis.size() + " clients)");
+        } catch (IOException e) {
+            System.err.println("Erreur sauvegarde " + nomFichier + ": " + e.getMessage());
         }
     }
 }
