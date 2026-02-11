@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.PriorityQueue;
 import java.util.Random;
 
@@ -181,7 +182,7 @@ public class ReseauFilesAttente {
         
         
         String nomFichier = String.format(
-        	    "src/main/resources/reseau_lambda%.1f_n%d_p%.1f_T%.0f.dat",
+        	    "src/main/resources/reseau_lambda%.3f_n%d_p%.1f_T%.0f.dat",
         	    lambda, f.length, fc.getP(), dureeSimulation
         	);
         sauvegarderClientsSortis(nomFichier);

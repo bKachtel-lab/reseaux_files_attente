@@ -1,14 +1,17 @@
 package mis.RFA;
 
+import java.util.Locale;
+
 public class Main {
 
     public static void main(String[] args) {
+    	Locale.setDefault(Locale.US);
 
         // Paramètres communs
     	
         double muC = 1/10.0;          // Coordinateur : 10 ms
         double p = 0.5;              // Probabilité de sortie
-        double dureeSimulation = 30000.0;
+        double dureeSimulation = 100000.0;
 
         // TEST 1 : 1 serveur rapide
         System.out.println("= TEST 1 : 1 serveur rapide ==");
@@ -16,7 +19,7 @@ public class Main {
         double lambda1 = 0.002;
 
         double[] muServeurs1 = { 1/120.0 };   // 120 ms
-        double[] q1 = { 0.5 };
+        double[] q1 = { 1.0 };
 
         ReseauFilesAttente rfa1 = new ReseauFilesAttente(
                 lambda1,
@@ -33,8 +36,8 @@ public class Main {
         // TEST 2 : 1 serveur rapide + 1 lent
         System.out.println("\n= TEST 2 : 1 rapide + 1 lent =");
 
-        double[] muServeurs2 = { 1/120.0, 1/120.0 };  // 120 ms et 240 ms
-        double[] q2 = { 0.25, 0.25 };
+        double[] muServeurs2 = { 1/120.0, 1/240.0 };  // 120 ms et 240 ms
+        double[] q2 = { 0.5, 0.5 };
 
         ReseauFilesAttente rfa2 = new ReseauFilesAttente(
                 lambda1,
@@ -50,8 +53,8 @@ public class Main {
         // TEST 3 : 1 serveur rapide + 2 serveurs lents
         System.out.println("\n=== TEST 3 : 1 rapide + 2 serveurs lents ===");
 
-        double[] muServeurs3 = { 1/120.0, 0.1/240.0, 1/240.0};
-        double[] q3 = { 0.5/3, 0.5/3, 0.5/3 };
+        double[] muServeurs3 = { 1/120.0, 1/240.0, 1/240.0};
+        double[] q3 = { 1.0/3, 1.0/3, 1.0/3 };
 
         ReseauFilesAttente rfa3 = new ReseauFilesAttente(
                 lambda1,
