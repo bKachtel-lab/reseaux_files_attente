@@ -215,7 +215,7 @@ public class ReseauFilesAttente {
 
     private String nomFichierNT() {
         return String.format(Locale.US,
-            "src/main/resources/test_5_nt_lambda%.3f_n%d_p%.1f_T%.0f.dat",
+            "src/main/resources/nt_lambda%.3f_n%d_p%.1f_T%.0f.dat",
             lambda, f.length, fc.getP(), dureeSimulation);
     }
 
@@ -248,7 +248,7 @@ public class ReseauFilesAttente {
         
         
         String nomFichier = String.format(
-        	    "src/main/resources/test_5_reseau_lambda%.3f_n%d_p%.1f_T%.0f.dat",
+        	    "src/main/resources/reseau_lambda%.3f_n%d_p%.1f_T%.0f.dat",
         	    lambda, f.length, fc.getP(), dureeSimulation
         	);
         sauvegarderClientsSortis(nomFichier);

@@ -35,9 +35,9 @@ public class Main {
         );
 
         rfa1.simuler();
+*/
 
-
-        // TEST 2 : 1 serveur rapide + 1 lent
+         //TEST 2 : 1 serveur rapide + 1 lent
         System.out.println("\n= TEST 2 : 1 rapide + 1 lent =");
 
         double[] muServeurs2 = { 1/120.0, 1/240.0 };  // 120 ms et 240 ms
@@ -53,7 +53,8 @@ public class Main {
         );
 
         rfa2.simuler();
-
+        
+/*
         // TEST 3 : 1 serveur rapide + 2 serveurs lents
         System.out.println("\n=== TEST 3 : 1 rapide + 2 serveurs lents ===");
 
@@ -69,7 +70,7 @@ public class Main {
                 dureeSimulation
         );
 
-        rfa3.simuler();*/
+        rfa3.simuler();
         
      // TEST 4 : 2 serveurs dont un plus rapide (190 ms)
         System.out.println("\n== TEST 4 : 2 serveurs (120 ms + 190 ms) =");
@@ -87,6 +88,6 @@ public class Main {
         );
 
         rfa4.simuler();
-
+*/
     }
 }
