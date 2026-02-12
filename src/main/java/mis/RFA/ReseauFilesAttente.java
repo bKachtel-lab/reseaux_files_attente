@@ -26,7 +26,9 @@ public class ReseauFilesAttente {
     private int compteurClients;      // id unique
     private int nbClientsEntres;
     private int nbClientsSortis;
-
+    
+    private PrintWriter ntWriter;
+    private double lastTime, areaN, areaN_RP, tWarmup;
     // Pour les stats détaillées
     private final List<Client> clientsSortis;
 
@@ -74,29 +76,49 @@ public class ReseauFilesAttente {
     // Simulation principale
 
     public void simuler() {
-        // première arrivée externe
-        double datePremiereArrivee = genererInterArrivee();
-        agenda.add(new Evenmt(datePremiereArrivee,
-                              Evenmt.TypeEvenement.ARRIVEE_EXTERNE,
-                              -1));
+        tWarmup = dureeSimulation / 2.0;
+        lastTime = 0.0;
+        areaN = 0.0;
+        areaN_RP = 0.0;
 
-        while (!agenda.isEmpty()) {
-            Evenmt ev = agenda.poll();
-            tempsCourant = ev.getDate();
 
-            if (tempsCourant > dureeSimulation) {
-                break;
+        try (PrintWriter nt = new PrintWriter(new FileWriter(nomFichierNT()))) {
+            this.ntWriter = nt;
+            ntWriter.println("# t N");
+
+            // première arrivée
+            double datePremiereArrivee = genererInterArrivee();
+            agenda.add(new Evenmt(datePremiereArrivee, Evenmt.TypeEvenement.ARRIVEE_EXTERNE, -1));
+
+            lastTime = 0.0;
+
+            while (!agenda.isEmpty()) {
+                Evenmt ev = agenda.poll();
+                tempsCourant = ev.getDate();
+                if (tempsCourant > dureeSimulation) break;
+
+                majAiresEtNT(tempsCourant);  // <---- ICI
+
+                switch (ev.getType()) {
+                    case ARRIVEE_EXTERNE -> traiterArriveeExterne();
+                    case FIN_SERVICE_FC -> traiterFinServiceFc();
+                    case FIN_SERVICE_FI -> traiterFinServiceFi(ev.getIndexServeur());
+                }
             }
 
-            switch (ev.getType()) {
-                case ARRIVEE_EXTERNE -> traiterArriveeExterne();
-                case FIN_SERVICE_FC -> traiterFinServiceFc();
-                case FIN_SERVICE_FI -> traiterFinServiceFi(ev.getIndexServeur());
-            }
+            // Flush final : on ferme l’aire jusqu’à T
+            majAiresEtNT(dureeSimulation);
+            System.out.println("N final ≈ " + nombreClientsDansReseau());
+
+        } catch (IOException e) {
+            System.err.println("Erreur NT: " + e.getMessage());
+        } finally {
+            ntWriter = null;
         }
 
         afficherStats();
     }
+
 
     // Traitement des événements
  
@@ -160,8 +182,44 @@ public class ReseauFilesAttente {
                     Evenmt.TypeEvenement.FIN_SERVICE_FI, idx));
         }
     }
+    
+    private void majAiresEtNT(double t) {
+        int N = nombreClientsDansReseau();
+        double dt = t - lastTime;
+        if (dt < 0) dt = 0;
+
+        // aire totale
+        areaN += N * dt;
+
+        // aire régime permanent (sur [T/2, T])
+        if (t > tWarmup) {
+            double start = Math.max(lastTime, tWarmup);
+            double dtRP = t - start;
+            if (dtRP > 0) areaN_RP += N * dtRP;
+        }
+
+        // log N(t)
+        if (ntWriter != null) {
+            ntWriter.printf(Locale.US, "%.6f %d%n", t, N);
+        }
+
+        lastTime = t;
+    }
 
 
+    private int nombreClientsDansReseau() {
+        int N = fc.getTailleFile();
+        for (FileAttente fi : f) N += fi.getTailleFile();
+        return N;
+    }
+
+    private String nomFichierNT() {
+        return String.format(Locale.US,
+            "src/main/resources/nt_lambda%.3f_n%d_p%.1f_T%.0f.dat",
+            lambda, f.length, fc.getP(), dureeSimulation);
+    }
+
+    
     private void afficherStats() {
         System.out.println("Temps de simulation: " + dureeSimulation);
         System.out.println("Clients entrés : " + nbClientsEntres);
@@ -175,6 +233,14 @@ public class ReseauFilesAttente {
             double W = sommeTempsPresence / clientsSortis.size();
             System.out.println("Temps moyen de présence dans le réseau W ≈ " + W + " ms");
         }
+        double L = areaN / dureeSimulation;
+        double Lrp = areaN_RP / (dureeSimulation - tWarmup);
+
+        System.out.printf(Locale.US, "L moyen ≈ %.4f clients%n", L);
+        System.out.printf(Locale.US, "L (regime permanent) ≈ %.4f clients%n", Lrp);
+
+        System.out.printf(Locale.US, "L (régime permanent, [%.0f, %.0f]) ≈ %.4f clients%n",
+                tWarmup, dureeSimulation, Lrp);
 
         for (int i = 0; i < f.length; i++) 
             System.out.println(f[i].getNom()
