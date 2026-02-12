@@ -5,10 +5,10 @@ import java.util.Locale;
 public class Main {
 
     public static void main(String[] args) {
-    	Locale.setDefault(Locale.US);
+        Locale.setDefault(Locale.US);
 
         // Paramètres communs
-    	
+
         double muC = 1/10.0;          // Coordinateur : 10 ms
         double p = 0.5;              // Probabilité de sortie
         double dureeSimulation = 100000.0;
