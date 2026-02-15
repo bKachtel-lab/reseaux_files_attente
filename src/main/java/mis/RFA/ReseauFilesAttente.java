@@ -55,6 +55,16 @@ public class ReseauFilesAttente {
         this.nbClientsEntres = 0;
         this.nbClientsSortis = 0;
         this.clientsSortis = new ArrayList<>();
+        //erreur test
+        double sommeQ = 0.0;
+        for (double qi : q) sommeQ += qi;
+
+        if (Math.abs(sommeQ - 1.0) > 1e-9) {
+            throw new IllegalArgumentException(
+                "Les probabilités q doivent sommer à 1 (somme = " + sommeQ + ")"
+            );
+        }
+
     }
 
     // Générateurs aléatoires

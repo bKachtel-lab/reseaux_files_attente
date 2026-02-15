@@ -18,12 +18,13 @@ public class Main {
         double lambda3 = 0.01;
         
         // TEST 1 : 1 serveur rapide
-        System.out.println("= TEST 1 : 1 serveur rapide ==");
+       System.out.println("= TEST 1 : 1 serveur rapide ==");
 
+       
         double[] muServeurs1 = { 1/120.0 };   // 120 ms
         double[] q1 = { 1.0 };
 
-        ReseauFilesAttente rfa1 = new ReseauFilesAttente(
+    /*    ReseauFilesAttente rfa1 = new ReseauFilesAttente(
                 lambda3,
                 muC,
                 muServeurs1,
@@ -73,11 +74,11 @@ public class Main {
      // TEST 4 : 2 serveurs dont un plus rapide (190 ms)
         System.out.println("\n== TEST 4 : 2 serveurs (120 ms + 190 ms) =");
 
-        double[] muServeurs4 = { 1/120, 1/190 }; // 120 ms et 190 ms
-        double[] q4 = { 0.25, 0.25 };
+        double[] muServeurs4 = { 1.0/120, 1.0/190 }; // 120 ms et 190 ms
+        double[] q4 = { 1.0/2.0, 1.0/2.0 };
 
         ReseauFilesAttente rfa4 = new ReseauFilesAttente(
-                lambda3,
+                lambda1,
                 muC,
                 muServeurs4,
                 p,
@@ -86,16 +87,16 @@ public class Main {
         );
 
         rfa4.simuler();
-
+*/
         // TEST 5 : influence de lambda
         System.out.println("\n== TEST 5 : lambda plus élevé ====");
 
 
-        double[] muServeurs5 = { 1/240, 1/240, 1/240 };
+        double[] muServeurs5 = { 1.0/240, 1.0/240, 1.0/240 };
         double[] q5 = { 1.0/3, 1.0/3, 1.0/3 };
 
         ReseauFilesAttente rfa5 = new ReseauFilesAttente(
-                lambda1,
+                lambda3,
                 muC,
                 muServeurs5,
                 p,
