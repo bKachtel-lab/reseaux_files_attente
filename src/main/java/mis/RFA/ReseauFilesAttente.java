@@ -31,13 +31,15 @@ public class ReseauFilesAttente {
     private double lastTime, areaN, areaN_RP, tWarmup;
     // Pour les stats détaillées
     private final List<Client> clientsSortis;
+    private final String dossierSortie;
 
     public ReseauFilesAttente(double lambda,
                               double c,              // paramètre du coordinateur
                               double[] muServeurs,  // paramètres des Fi
                               double pSortie,
                               double[] q,
-                              double dureeSimulation) {
+                              double dureeSimulation,
+                              String dossierSortie) {
 
         this.lambda = lambda;
         this.dureeSimulation = dureeSimulation;
@@ -64,7 +66,7 @@ public class ReseauFilesAttente {
                 "Les probabilités q doivent sommer à 1 (somme = " + sommeQ + ")"
             );
         }
-
+        this.dossierSortie = dossierSortie;
     }
 
     // Générateurs aléatoires
@@ -225,9 +227,14 @@ public class ReseauFilesAttente {
 
     private String nomFichierNT() {
         return String.format(Locale.US,
-            "src/main/resources/nt_lambda%.3f_n%d_p%.1f_T%.0f.dat",
-            lambda, f.length, fc.getP(), dureeSimulation);
+            "src/main/resources/%s/nt_lambda%.3f_n%d_p%.1f_T%.0f.dat",
+            dossierSortie,
+            lambda,
+            f.length,
+            fc.getP(),
+            dureeSimulation);
     }
+
 
     
     private void afficherStats() {
@@ -257,9 +264,13 @@ public class ReseauFilesAttente {
                     + " a traité " + f[i].getNbClientsTraites() + " clients.");
         
         
-        String nomFichier = String.format(
-        	    "src/main/resources/reseau_lambda%.3f_n%d_p%.1f_T%.0f.dat",
-        	    lambda, f.length, fc.getP(), dureeSimulation
+        String nomFichier = String.format(Locale.US,
+        	    "src/main/resources/%s/reseau_lambda%.3f_n%d_p%.1f_T%.0f.dat",
+        	    dossierSortie,
+        	    lambda,
+        	    f.length,
+        	    fc.getP(),
+        	    dureeSimulation
         	);
         sauvegarderClientsSortis(nomFichier);
     }
