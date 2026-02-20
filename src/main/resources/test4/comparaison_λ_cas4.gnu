@@ -3,6 +3,9 @@ set output "courbes/comparaison_λ_cas4.png"
 set title "Comparaison de N(t) pour différentes valeurs de λ (n=2)"
 set xlabel "Temps (ms)"
 set ylabel "Nombre de requêtes"
+set yrange [0:35]
+set ytics 0,5,35
+
 set grid
 set key top left
 
