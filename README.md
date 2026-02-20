@@ -7,11 +7,11 @@
 ## Implémentation d’un réseau de files d’attente pour simuler une base de données distribuée
 
 
-### Membres du binôme :
+## Membres du binôme :
 - Boussad Hammoum
 - Boukhalfa Kachtel 
 
-### Introduction
+## Introduction
 Ce projet porte sur la modélisation et la simulation d'une base de données distribuée par un réseau de files d'attente. Les requêtes (clients) arrivent selon un processus de Poisson de taux λ au coordinateur (file Fc, service exponentiel de paramètre c). Après service au coordinateur :    
 
 * Avec probabilité p, la requête est terminée et quitte le système.
@@ -24,14 +24,14 @@ Chaque file est une M/M/1 L’objectif est d’étudier la stabilité et les per
 ​Le modèle peut être présenté ainsi :  
 ![schema](images/schema.png)
 
-###### Paramètres du système :
+##### Paramètres du système :
 | Serveur | Temps de service (ms) | Taux de service μ (req/ms) |
 |:-------:|:---------------------:|:--------------------------:|
 | Fc      | 10                    | 0.0100                        |
 | Rapides | 120                   | 0.00833                       |
 | Lents   | 240                   | 0.00417                       |
 | Moyens  | 190                   | 0.00526                       |
-###### Paramètre de simulation :
+##### Paramètre de simulation :
 | Paramètre | Description | Valeur |
 |:-------:|:---------------------:|:--------------------------:|
 |λ|taux d'arrivé|{0.002, 0.008, 0.01}|
@@ -40,8 +40,8 @@ Chaque file est une M/M/1 L’objectif est d’étudier la stabilité et les per
    
 
 *Pour le test 5, les paramètres **λ et p** ont été variés afin d’analyser leur influence sur la charge et la stabilité du système*
-### Conception
-#### Modélisation 
+## Conception
+### Modélisation 
 On a décidé de repartir à partir du TP3 qui avait pour objectif de **d’etudier et de simuler un système de file d’attente de type
 M/M/1,** et donc de récuperer les classes *FileAttente et Client*   
 
@@ -54,7 +54,7 @@ M/M/1,** et donc de récuperer les classes *FileAttente et Client*
 | ReseauFilesAttente| Simulateur principal| agenda, majAiresEtNT(), calcul L/W, export données
 |Main|Execution des tests| Paramètres du système (λ,qi, μ...), dureeSimulation|
 
-#### Architecture
+### Architecture
 
 ```mermaid
 classDiagram
@@ -111,7 +111,7 @@ classDiagram
     Coordinateur --|> FileAttente : hérite
 ```
 
-#### Implémentaion
+### Implémentaion
 - *Génération* : Les temps inter-arrivées et de service suivent une loi exponentielle : *T = -ln(U)/λ* où U est uniforme sur [0,1]
 - *Simulation à événements discrets* : file de priorité **(PriorityQueue) triéé par date croissante des évévvements, on note 3 types 
   * *ARRIVEE_EXTERNE* : création et envoi du Client vers FC
@@ -121,9 +121,9 @@ classDiagram
 - *Tracé* : données **(N(t) et temps de présence)** exportés dans des fichiers *.dat* pour *Gnuplot*
 - *Régime permanent* : statistiques séparées sur [T/2, T]  
 
-### Analyse
+## Analyse
 Dans cette section des résultats et observations de différentes courbes seront exposés et analysés
-##### Simulation 1
+#### Simulation 1
 ![cas1](src/main/resources/test1/courbes/comparaison_Î»_cas1.png)
 
 ###### Cas λ = 0.002
@@ -167,7 +167,7 @@ La simulation confirme donc parfaitement la valeur théorique du λ critique.
 
 ---
 
-##### Simulation 2
+#### Simulation 2
 ![cas2](src/main/resources/test2/courbes/comparaison_I_cas2.png)
 
 ###### Cas λ = 0.002
@@ -208,16 +208,15 @@ Avec p = 0.5 :
 
 Comparaison :
 
-- λ = 0.002 < 0.00625 → système stable (confirmé)
-- λ = 0.008 > 0.00625 → système instable (confirmé)
-- λ = 0.01 > 0.00625 → système instable (confirmé)
-
+- λ = 0.002 < 0.00625 → système stable 
+- λ = 0.008 > 0.00625 → système instable 
+- λ = 0.01 > 0.00625 → système instable 
 Conclusion :  
 La simulation est cohérente avec le modèle théorique de Jackson.
 
 ---
 
-##### Simulation 3
+#### Simulation 3
 ![cas3](src/main/resources/test3/courbes/comparaison_Î»_cas3.png)
 
 ###### Cas λ = 0.002
@@ -261,7 +260,7 @@ La simulation confirme la théorie.
 
 ---
 
-##### Simulation 4
+#### Simulation 4
 ![cas4](src/main/resources/test4/courbes/comparaison_Î»_cas4.png)
 
 ###### Cas λ = 0.002
@@ -304,61 +303,8 @@ ce qui correspond aux observations expérimentales.
 
 ---
 
-##### Simulation 5
-![cas5](src/main/resources/test5/courbes/comparaison_Î»_cas5.png)
 
-Ce test analyse l’influence conjointe de λ et p.
-
-Lorsque p diminue, le nombre moyen de passages dans le système augmente.
-
-Nombre moyen de passages = 1 / p
-
-- p = 0.8 → 1.25 passages
-- p = 0.5 → 2 passages
-- p = 0.2 → 5 passages
-
-On observe que plus p est faible, plus la charge interne augmente.
-
----
-
-### Comparaison théorique – Influence de p
-
-Condition de stabilité :
-
-λ < p × μ_total
-
-Si p diminue, λ_crit diminue également.  
-Le système devient donc plus facilement instable.
-
-Les résultats de simulation confirment cette analyse.
-
----
-
-# Comparaison globale théorie / simulation
-
-Les résultats montrent que :
-
-- L’augmentation du nombre de serveurs augmente λ_crit.
-- L’augmentation de λ provoque une transition stabilité → instabilité.
-- La diminution de p augmente la charge interne.
-- Les observations expérimentales sont cohérentes avec le modèle théorique de Jackson.
-
----
-
-# Conclusion générale
-
-Cette étude a permis :
-
-- d’implémenter une simulation événementielle d’un réseau de files d’attente,
-- de déterminer expérimentalement les conditions de stabilité,
-- de calculer les λ critiques théoriques,
-- de comparer théorie et simulation.
-
-Les résultats obtenus confirment la validité du modèle de Jackson et montrent clairement l’impact du taux d’arrivée et du nombre de serveurs sur la stabilité du système.
-
----
-
-# Simulation 5 – Influence conjointe de λ et p
+#### Simulation 5 – Influence conjointe de λ et p
 
 Dans ce test, nous faisons varier :
 
@@ -371,7 +317,7 @@ Analyser la relation entre p et λ afin d’identifier les paramètres qui rende
 
 ---
 
-## Rappel Théorique
+### Rappel Théorique
 
 Condition de stabilité :
 
@@ -393,7 +339,7 @@ On calcule λ_crit pour chaque valeur de p.
 
 ---
 
-## Cas p = 0.2
+#### Cas p = 0.2
 
 λ_crit = 0.2 × 0.01667  
 λ_crit = 0.00333  
@@ -404,7 +350,7 @@ Comparaison :
 - λ = 0.008 > 0.00333 → Instable
 - λ = 0.01 > 0.00333 → Instable
 
-### Observation graphique
+#### Observation graphique
 ![p02](src/main/resources/test5/courbes/comparaison_Î»_p0.2.png)
 
 On observe :
@@ -422,7 +368,7 @@ Le système devient rapidement instable.
 
 ---
 
-## Cas p = 0.5
+#### Cas p = 0.5
 
 λ_crit = 0.5 × 0.01667  
 λ_crit = 0.00833  
@@ -433,7 +379,7 @@ Comparaison :
 - λ = 0.008 ≈ 0.00833 → Limite
 - λ = 0.01 > 0.00833 → Instable
 
-### Observation graphique
+#### Observation graphique
 ![p05](src/main/resources/test5/courbes/comparaison_Î»_p0.5.png)
 
 On observe :
@@ -446,7 +392,7 @@ Le système est à la limite de stabilité lorsque λ ≈ λ_crit.
 
 ---
 
-## Cas p = 0.8
+#### Cas p = 0.8
 
 λ_crit = 0.8 × 0.01667  
 λ_crit = 0.01333  
@@ -457,7 +403,7 @@ Comparaison :
 - λ = 0.008 < 0.01333 → Stable
 - λ = 0.01 < 0.01333 → Stable
 
-### Observation graphique
+#### Observation graphique
 ![p08](src/main/resources/test5/courbes/comparaison_Î»_p0.8.png)
 
 On observe :
@@ -474,7 +420,7 @@ Le système supporte donc des λ plus élevés.
 
 ---
 
-# Analyse Globale – Relation entre p et λ
+### Analyse Globale – Relation entre p et λ
 
 On remarque que :
 
@@ -494,7 +440,7 @@ Si p est faible → les requêtes circulent plus longtemps → surcharge interne
 
 ---
 
-# Conclusion du Test 5
+### Conclusion du Test 5
 
 Ce test permet d’avoir une vision claire de la relation entre les paramètres :
 
